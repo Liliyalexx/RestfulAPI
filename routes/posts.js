@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const posts = require('../data/posts.js');
+const users = require('../data/users.js');
+//const comments = require('/routes/comments.js');
 
 //GET route to get all post data
 router.get('/', (req, res) => {
@@ -11,9 +13,41 @@ router.get('/', (req, res) => {
       type: 'GET',
     },
   ];
+let data;
 
-  res.json({ posts, links });
+if(req.query.userId){
+  data = posts.filter((post) => post.userId == req.query.userId);
+} else{
+  data = posts;
+}
+  res.json({ data, links });
 });
+//GET /posts/id:comments
+
+router.get('/:id/comments', (req, res) =>{
+  let foundComments;
+  if(req.query.userId){
+    foundComments = comments.filter(
+      (comment) => comment.postId == req.params.id && comment.userId == req.queryuserId);
+    
+  }else{
+    foundComments = comments.filter(
+      (comment) => comment.postId == req.params.id
+    );
+  }
+  
+  res.json(foundComments);
+});
+//GET/users/:id/comments
+//Retrieves all comments made by a user with the cpecified id.
+
+
+
+
+
+
+
+
 
 // GET route to get a post by ID
 router.get('/:id', (req, res, next) => {

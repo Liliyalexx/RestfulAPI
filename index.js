@@ -3,6 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const userRouter = require('./routes/users.js');
 const postRouter = require('./routes/posts.js');
+const commentRouter = require('./routes/comments.js');
 
 // Body parser middlware
 // we have access to the parsed data within our routes.
@@ -26,37 +27,38 @@ ${time.toLocaleTimeString()}: Received a ${req.method} request to ${req.url}.`
   next();
 });
 
-// Valid API Keys.
-const apiKeys = ['perscholas', 'ps-example', 'hJAsknw-L198sAJD-l3kasx'];
+// // Valid API Keys.
+// const apiKeys = ['Hunger Games', 'Three Body Problem', 'hJAsknw-L198sAJD-l3kasx'];
 
-// New middleware to check for API keys!
-// Note that if the key is not verified,
-// we do not call next(); this is the end.
-// This is why we attached the /api/ prefix
-// to our routing at the beginning!
-app.use('/api', function (req, res, next) {
-  var key = req.query['api-key'];
+// // New middleware to check for API keys!
+// // Note that if the key is not verified,
+// // we do not call next(); this is the end.
+// // This is why we attached the /api/ prefix
+// // to our routing at the beginning!
+// app.use('/api', function (req, res, next) {
+//   var key = req.query['api-key'];
 
-  // Check for the absence of a key.
-  if (!key) {
-    res.status(400);
-    return res.json({ error: 'API Key Required' });
-  }
+//   // Check for the absence of a key.
+//   if (!key) {
+//     res.status(400);
+//     return res.json({ error: 'API Key Required' });
+//   }
 
-  // Check for key validity.
-  if (apiKeys.indexOf(key) === -1) {
-    res.status(401);
-    return res.json({ error: 'Invalid API Key' });
-  }
+//   // Check for key validity.
+//   if (apiKeys.indexOf(key) === -1) {
+//     res.status(401);
+//     return res.json({ error: 'Invalid API Key' });
+//   }
 
-  // Valid key! Store it in req.key for route access.
-  req.key = key;
-  next();
-});
+//   // Valid key! Store it in req.key for route access.
+//   req.key = key;
+//   next();
+// });
 
 // API Routes
 app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
+app.use('/api/comments', commentRouter);
 
 app.get('/', (req, res) => {
   res.json({
@@ -96,6 +98,20 @@ app.get('/api', (req, res) => {
       },
     ],
   });
+});
+
+app.get('/users/new', (req, res) => {
+  res.send(`
+      <div background = https://www.pexels.com/photo/photo-of-teacup-on-top-of-books-1831744/> 
+        <h1>Create a User</h1>
+        <form action="/api/users?api-key=perscholas"  method="POST">
+          Name: <input type="text" name="name" /> <br />
+          Username: <input type="text" name="username" /> <br />
+          Email: <input type="text" name="email" /> <br />
+          <input type="submit" value="Create User" />
+        </form>
+      </div>
+    `);
 });
 
 // The only way this middlware runs is if a route handler function runs the "next()" function

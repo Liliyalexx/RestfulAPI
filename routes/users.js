@@ -14,6 +14,17 @@ router.get('/', (req, res) => {
 
   res.json({ users, links });
 });
+router.get('/:id/posts', (req, res) =>{
+const foundPosts = posts.filter((post) =>post.userId == req.param.id);
+
+if(foundPosts){
+  res.json(foundPosts);
+
+}else{
+next();
+
+}
+});
 
 // GET router to get a user by ID
 router.get('/:id', (req, res, next) => {
